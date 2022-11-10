@@ -1,4 +1,4 @@
-package tech.sbdevelopment.vehiclesplusconverter;
+package tech.sbdevelopment.vehiclesplusconverter.handlers;
 
 import me.legofreak107.vehiclesplus.VehiclesPlus;
 import me.legofreak107.vehiclesplus.vehicles.api.VehiclesPlusAPI;
@@ -18,20 +18,18 @@ import me.legofreak107.vehiclesplus.vehicles.vehicles.objects.addons.skins.Turre
 import nl.sbdeveloper.vehiclesplus.api.vehicles.VehicleModel;
 import nl.sbdeveloper.vehiclesplus.api.vehicles.settings.UpgradableSetting;
 import nl.sbdeveloper.vehiclesplus.api.vehicles.settings.impl.*;
-import nl.sbdeveloper.vehiclesplus.storage.file.JSONFile;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+import tech.sbdevelopment.vehiclesplusconverter.VehiclesPlusConverter;
+import tech.sbdevelopment.vehiclesplusconverter.api.ConversionException;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
-import static tech.sbdevelopment.vehiclesplusconverter.utils.MainUtil.__;
+import static tech.sbdevelopment.vehiclesplusconverter.utils.MainUtil.*;
 
 public class Converter {
     private Converter() {
@@ -239,7 +237,7 @@ public class Converter {
                         .sounds(defaultSounds)
                         .build();
 
-                save(model, "vehicles/" + model.getTypeId(), model.getId());
+                saveToVehiclesPlus(model, "vehicles/" + model.getTypeId(), model.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -261,43 +259,6 @@ public class Converter {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    private static String getClassByFullName(String name) {
-        String[] split = name.split("\\.");
-        if (split.length == 0) return name;
-        return split[split.length - 1]; //Last position
-    }
-
-    private static String getTypeIdByClass(String baseVehicle, String type) throws ConversionException {
-        switch (type) {
-            case "BikeType":
-                return "bike";
-            case "BoatType":
-                return "boat";
-            case "CarType":
-                return "car";
-            case "HelicopterType":
-                return "helicopter";
-            case "HovercraftType":
-                return "hovercraft";
-            case "PlaneType":
-                return "plane";
-            default:
-                throw new InvalidConversionException("vehicleType", baseVehicle);
-        }
-    }
-
-    private static void save(Object data, String subFolder, String fileName) {
-        File parentFolders = new File(nl.sbdeveloper.vehiclesplus.VehiclesPlus.getInstance().getDataFolder(), subFolder);
-        if (!parentFolders.exists() && !parentFolders.mkdirs()) return;
-
-        JSONFile jsonFile = new JSONFile(nl.sbdeveloper.vehiclesplus.VehiclesPlus.getInstance(), subFolder + "/" + fileName);
-        try {
-            jsonFile.write(data);
-        } catch (IOException e) {
-            VehiclesPlusConverter.getInstance().getLogger().log(Level.SEVERE, "Couldn't save to the file " + fileName, e);
         }
     }
 }

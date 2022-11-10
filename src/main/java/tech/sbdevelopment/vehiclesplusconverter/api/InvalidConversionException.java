@@ -1,4 +1,4 @@
-package tech.sbdevelopment.vehiclesplusconverter;
+package tech.sbdevelopment.vehiclesplusconverter.api;
 
 public class InvalidConversionException extends ConversionException {
     public InvalidConversionException(String message, String filename) {

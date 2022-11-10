@@ -1,4 +1,4 @@
-package tech.sbdevelopment.vehiclesplusconverter;
+package tech.sbdevelopment.vehiclesplusconverter.api;
 
 import java.io.IOException;
 
