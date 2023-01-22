@@ -84,11 +84,11 @@ public class Converter {
 
     private static void convertFuels() {
         for (Map.Entry<String, FuelType> entry : VehiclesPlus.getVehicleManager().getFuelTypeHashMap().entrySet()) {
-            nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType ft = nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType.builder()
-                    .name(entry.getValue().getName())
-                    .item(entry.getValue().getFuelItem())
-                    .pricePerLiter(entry.getValue().getPricePerLiter())
-                    .build();
+            nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType ft = new nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType(
+                    entry.getValue().getName(),
+                    entry.getValue().getPricePerLiter(),
+                    entry.getValue().getFuelItem()
+            );
 
             nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getFuelTypes().put(entry.getKey(), ft);
         }

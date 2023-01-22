@@ -20,7 +20,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <plugin> 
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
@@ -82,9 +82,9 @@
         <dependency>
             <groupId>nl.sbdeveloper</groupId>
             <artifactId>VehiclesPlus-v3</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/libs/VehiclesPlus-3.0.0.jar</systemPath>
+            <systemPath>${project.basedir}/src/libs/VehiclesPlus-3.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

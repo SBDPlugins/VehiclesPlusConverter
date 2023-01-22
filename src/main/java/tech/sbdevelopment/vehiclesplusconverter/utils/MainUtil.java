@@ -1,7 +1,7 @@
 package tech.sbdevelopment.vehiclesplusconverter.utils;
 
 import net.md_5.bungee.api.ChatColor;
-import nl.sbdeveloper.vehiclesplus.storage.file.JSONFile;
+import nl.sbdeveloper.vehiclesplus.storage.file.HJSONFile;
 import tech.sbdevelopment.vehiclesplusconverter.VehiclesPlusConverter;
 import tech.sbdevelopment.vehiclesplusconverter.api.ConversionException;
 import tech.sbdevelopment.vehiclesplusconverter.api.InvalidConversionException;
@@ -47,7 +47,7 @@ public class MainUtil {
         File parentFolders = new File(nl.sbdeveloper.vehiclesplus.VehiclesPlus.getInstance().getDataFolder(), subFolder);
         if (!parentFolders.exists() && !parentFolders.mkdirs()) return;
 
-        JSONFile jsonFile = new JSONFile(nl.sbdeveloper.vehiclesplus.VehiclesPlus.getInstance(), subFolder + "/" + fileName);
+        HJSONFile jsonFile = new HJSONFile(nl.sbdeveloper.vehiclesplus.VehiclesPlus.getInstance(), subFolder + "/" + fileName);
         try {
             jsonFile.write(data);
         } catch (IOException e) {
