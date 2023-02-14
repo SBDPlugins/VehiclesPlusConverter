@@ -6,7 +6,7 @@
 
     <groupId>tech.sbdevelopment</groupId>
     <artifactId>VehiclesPlusConverter</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
     <packaging>jar</packaging>
 
     <name>VehiclesPlusConverter</name>
@@ -82,9 +82,9 @@
         <dependency>
             <groupId>nl.sbdeveloper</groupId>
             <artifactId>VehiclesPlus-v3</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.0-PRE3</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/libs/VehiclesPlus-3.0.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/src/libs/VehiclesPlus-3.0.0-PRE3.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

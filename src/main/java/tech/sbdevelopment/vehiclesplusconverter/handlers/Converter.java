@@ -15,9 +15,12 @@ import me.legofreak107.vehiclesplus.vehicles.vehicles.objects.addons.skins.BikeS
 import me.legofreak107.vehiclesplus.vehicles.vehicles.objects.addons.skins.Rotor;
 import me.legofreak107.vehiclesplus.vehicles.vehicles.objects.addons.skins.Skin;
 import me.legofreak107.vehiclesplus.vehicles.vehicles.objects.addons.skins.Turret;
+import nl.sbdeveloper.vehiclesplus.api.garages.Garage;
+import nl.sbdeveloper.vehiclesplus.api.vehicles.HolderItemPosition;
 import nl.sbdeveloper.vehiclesplus.api.vehicles.VehicleModel;
 import nl.sbdeveloper.vehiclesplus.api.vehicles.settings.UpgradableSetting;
 import nl.sbdeveloper.vehiclesplus.api.vehicles.settings.impl.*;
+import nl.sbdeveloper.vehiclesplus.storage.db.exceptions.DataStorageException;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
@@ -72,11 +75,11 @@ public class Converter {
 
     private static void convertRims() {
         for (Map.Entry<String, RimDesign> entry : VehiclesPlus.getVehicleManager().getRimDesignHashMap().entrySet()) {
-            nl.sbdeveloper.vehiclesplus.api.vehicles.rims.RimDesign rd = nl.sbdeveloper.vehiclesplus.api.vehicles.rims.RimDesign.builder()
-                    .name(entry.getValue().getName())
-                    .price(entry.getValue().getPrice())
-                    .skin(entry.getValue().getSkin())
-                    .build();
+            nl.sbdeveloper.vehiclesplus.api.vehicles.rims.RimDesign rd = new nl.sbdeveloper.vehiclesplus.api.vehicles.rims.RimDesign(
+                    entry.getValue().getName(),
+                    entry.getValue().getSkin(),
+                    entry.getValue().getPrice()
+            );
 
             nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getRimDesigns().put(entry.getKey(), rd);
         }
@@ -86,8 +89,8 @@ public class Converter {
         for (Map.Entry<String, FuelType> entry : VehiclesPlus.getVehicleManager().getFuelTypeHashMap().entrySet()) {
             nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType ft = new nl.sbdeveloper.vehiclesplus.api.vehicles.fuel.FuelType(
                     entry.getValue().getName(),
-                    entry.getValue().getPricePerLiter(),
-                    entry.getValue().getFuelItem()
+                    entry.getValue().getFuelItem(),
+                    entry.getValue().getPricePerLiter()
             );
 
             nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getFuelTypes().put(entry.getKey(), ft);
@@ -134,7 +137,8 @@ public class Converter {
                                 bikeSkin.getXOffset(),
                                 bikeSkin.getYOffset(),
                                 bikeSkin.getZOffset(),
-                                bikeSkin.getSkinColored()
+                                bikeSkin.getSkinColored(),
+                                HolderItemPosition.HEAD
                         ));
                     } else if (part instanceof Rotor) {
                         Rotor rotor = (Rotor) part;
@@ -142,7 +146,8 @@ public class Converter {
                                 rotor.getXOffset(),
                                 rotor.getYOffset(),
                                 rotor.getZOffset(),
-                                rotor.getSkinColored()
+                                rotor.getSkinColored(),
+                                HolderItemPosition.HEAD
                         ));
                     } else if (part instanceof Turret) {
                         Turret turret = (Turret) part;
@@ -151,6 +156,7 @@ public class Converter {
                                 turret.getYOffset(),
                                 turret.getZOffset(),
                                 turret.getSkin(),
+                                HolderItemPosition.HEAD,
                                 turret.getExplosionSize(),
                                 turret.getAmmo()
                         ));
@@ -160,7 +166,8 @@ public class Converter {
                                 skin.getXOffset(),
                                 skin.getYOffset(),
                                 skin.getZOffset(),
-                                skin.getSkinColored()
+                                skin.getSkinColored(),
+                                HolderItemPosition.HEAD
                         ));
                     } else if (part instanceof Wheel) {
                         Wheel wheel = (Wheel) part;
@@ -247,17 +254,33 @@ public class Converter {
     private static void convertVehicles() {
         for (Map.Entry<UUID, List<StorageVehicle>> set : VehiclesPlusAPI.getVehicleManager().getPlayerVehicleHashMap().entrySet()) {
             UUID ownerUUID = set.getKey();
+            String ownerName = Bukkit.getOfflinePlayer(ownerUUID).getName();
+            if (ownerName == null) {
+                Bukkit.getLogger().severe("Could not convert vehicle for player with UUID " + ownerUUID + ", the player name is unknown!");
+                continue;
+            }
+
+            final Garage garage = nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getGarage(ownerName).orElseGet(() -> new Garage(ownerName, ownerUUID));
+
             for (StorageVehicle vehicle : set.getValue()) {
                 try {
                     nl.sbdeveloper.vehiclesplus.api.vehicles.impl.StorageVehicle newVehicle = new nl.sbdeveloper.vehiclesplus.api.vehicles.impl.StorageVehicle(
-                            nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getVehicleModels().values().stream().filter(v -> v.getId().equalsIgnoreCase(vehicle.getBaseVehicle())).findFirst().orElseThrow(() -> new ConversionException("No VehicleModel found for", vehicle.getUuid())),
-                            ownerUUID
+                            nl.sbdeveloper.vehiclesplus.api.VehiclesPlusAPI.getVehicleModels().values().stream().filter(v -> v.getId().equalsIgnoreCase(vehicle.getBaseVehicle())).findFirst().orElseThrow(() -> new ConversionException("No VehicleModel found for", vehicle.getUuid()))
                     );
 
                     newVehicle.save();
+                    garage.addVehicle(newVehicle.getUuid());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Bukkit.getLogger().severe("Could not convert vehicle for player with UUID " + ownerUUID + ", could not save the vehicle!");
                 }
+            }
+
+            try {
+                garage.save();
+            } catch (DataStorageException e) {
+                e.printStackTrace();
+                Bukkit.getLogger().severe("Could not convert vehicle for player with UUID " + ownerUUID + ", could not save the garage!");
             }
         }
     }
